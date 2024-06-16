@@ -1,0 +1,76 @@
+.custom-loading-icon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+}
+
+/* YourComponent.css or styles.css */
+.custom-login-signup-container {
+  display: flex;
+  /* Change flex direction to column for small screens */
+  justify-content: space-between;
+}
+
+.custom-login-form-container,
+.custom-signup-form-container {
+  flex: 1;
+  margin-right: 30px; /* chnagin horizontla gap between forms*/  
+}
+
+.custom-login-form,
+.custom-signup-form {
+  width: 100%;
+}
+
+.custom-form-field {
+  margin-bottom: 10px; /* Adjust spacing between form fields */
+}
+
+.custom-form-field select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.custom-form-field select::placeholder {
+  font-size: 12px;
+}
+
+.custom-form-field button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3498db;
+  color: #fff;
+  cursor: pointer;
+}
+
+.custom-form-field button:hover {
+  background-color: #2076c1;
+}
+
+.custom-error {
+  color: red;
+}
+
+/* Media query for mobile screens */
+@media screen and (max-width: 768px) {
+  .custom-login-signup-container {
+    flex-direction: column;
+  }
+
+  .custom-login-form-container,
+  .custom-signup-form-container {
+    flex: none;
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .custom-login-form,
+  .custom-signup-form {
+    max-width: none;
+  }
+}

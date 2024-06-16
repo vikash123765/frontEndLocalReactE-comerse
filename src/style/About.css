@@ -1,0 +1,74 @@
+/* Common styles for sections */
+.about-container,
+.general-info-section,
+.shipping-section,
+.returns-section,
+.payment-section, /* Add the new section class */
+.team-section {
+    padding: 20px; /* Adding padding around each section */
+    background-color: #fff; /* Setting background color for sections */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adding box shadow for sections */
+    border-radius: 8px; /* Adding border radius to give sections rounded corners */
+    margin-bottom: 30px; /* Adding margin bottom to create space between sections */
+}
+
+/* Add some space between sections */
+.about-section {
+    margin-bottom: 30px; /* Adding margin bottom to create space between sections */
+}
+
+.team-member {
+    text-align: center; /* Centering text content within team member div */
+    margin-top: 20px; /* Adding margin top to create space between team members */
+}
+
+.team-member img {
+    width: 150px; /* Setting width of team member images */
+    height: 150px; /* Setting height of team member images */
+    object-fit: cover; /* Ensuring images cover the entire space */
+    border-radius: 50%; /* Making images circular */
+    margin-bottom: 10px; /* Adding margin bottom to create space between image and text */
+}
+
+h2 {
+    color: #333; /* Setting color for section headings */
+    font-size: 24px; /* Setting font size for section headings */
+    margin-bottom: 15px; /* Adding margin bottom to create space between headings and content */
+}
+
+p {
+    color: #666; /* Setting color for paragraph text */
+    line-height: 1.6; /* Setting line height for better readability */
+    font-size: 16px; /* Setting font size for paragraph text */
+}
+
+a {
+    color: #007bff; /* Setting color for links */
+    text-decoration: none; /* Removing default underline from links */
+    font-weight: bold; /* Setting font weight for links */
+}
+
+a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+
+/* Additional styles for specific sections */
+.about-section p {
+    font-weight: 400; /* Adjusting font weight for paragraph text in the about section */
+}
+
+/* Styles for the CEO, Co-founders, or team members */
+.team-member p {
+    font-size: 14px; /* Setting font size for team member roles */
+    color: #888; /* Setting color for team member roles */
+}
+
+/* Styles for links in the team section */
+.team-section a {
+    color: #555; /* Setting color for links in team section */
+}
+
+.team-section a:hover {
+    color: #333; /* Changing link color on hover in team section */
+    text-decoration: underline; /* Underline links on hover in team section */
+}

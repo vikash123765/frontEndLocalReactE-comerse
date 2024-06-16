@@ -1,0 +1,201 @@
+/* Reset default styles for links */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Global styles */
+html, body, #root {
+    min-height: 100vh;
+    margin: 0;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+/* Header styles */
+header {
+    background-color: var(--primary);
+    color: #000;
+    padding: 1rem;
+}
+
+header h1 {
+    font-family: serif;
+}
+
+header > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+
+    a {
+        color: #000;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 500;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+
+    nav ul {
+        list-style-type: none;
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+
+        li {
+            display: inline;
+        }
+    }
+
+    nav.mobile {
+        position: relative;
+        
+        .icon:hover + .menu ul,
+        .menu:hover ul {
+            display: flex !important;
+        }
+        
+        .menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--primary);
+            border-radius: 0 0 .5rem .5rem;
+            
+            ul {
+                display: none;
+                flex-direction: column;
+                padding: 0 2rem;
+            }
+        }
+    }
+}
+
+/* Main content styles */
+main {
+    padding: 1rem;
+    flex-grow: 1;
+
+    > * > section:not(:first-child):not(:last-child) {
+        margin: 2rem 0;
+    }
+}
+
+/* Footer styles */
+footer {
+    border-top: 3px solid var(--primary);
+    box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: flex-start;
+}
+
+#footer-items {
+    display: flex;
+    flex-wrap: nowrap; /* Ensure items stay on the same line */
+    justify-content: space-between;
+    gap: 2rem;
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling for small screens */
+}
+
+.footer-item-socialmedia {
+    height: 100%;
+    line-height: 64px;
+}
+
+.footer-item-socialmedia h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    margin-top:-16px;
+}
+
+.footer-item-socialmedia a {
+    display: inline-block;
+    margin-right: 10px; /* Adjust margin as needed */
+}
+
+/* Media query for small screens */
+@media screen and (max-width: 600px) {
+    #footer-items {
+        flex-direction: column; /* Switch to a column layout for smaller screens */
+        overflow-x: hidden; /* Hide horizontal scrollbar */
+    }
+
+    .footer-item {
+        margin-top: 2rem; /* Add space between items in column layout */
+    }
+}
+
+/* Facebook icon color */
+.footer-item-socialmedia a:nth-child(4) svg {
+    fill: #40b094;
+}
+
+/* Facebook icon color */
+.footer-item-socialmedia a:nth-child(2) svg {
+    fill: #0850e1;
+}
+
+/* Instagram icon color */
+/* .footer-item-socialmedia a:nth-child(3) svg {
+    fill: rgb(65, 21, 222); */
+
+/* Instagram icon color */
+.footer-item-socialmedia a:nth-child(3) svg {
+    background: linear-gradient(#f9ce34, #ee2a7b, #6228d7);
+    color: #fff;
+    padding: 4px;
+    width:47px;
+    margin-bottom:5px;
+    height:50px;
+    border-radius: 9px;
+    text-align: center;
+}
+
+
+.footer-item-socialmedia a:nth-child(5) svg {
+    background: #FF0000; /* YouTube red */
+    color: #FFFFFF; /* White */
+    padding: 4px;
+    width: 47px;
+    margin-bottom: 50px;
+    height: 50px;
+    border-radius: 9px;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+.footer-item-socialmedia a svg {
+    width: 60px;
+    height: 60px;
+    transition: fill 0.3s ease;
+
+}
+
+.footer-item-socialmedia a:hover svg {
+    fill: #1a1aaa;
+}
+
+/* Additional styles for links in navigation */
+nav ul li a {
+    color: #000; /* Set the color to black or the desired color */
+}
+
+.footer-item a {
+    color: #585455;
+}
+
+.footer-item a:hover {
+    color: #0056b3;
+}
+

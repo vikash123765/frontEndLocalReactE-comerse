@@ -1,0 +1,15 @@
+/* YourComponent.css or styles.css */
+.logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px; /* Initial width */
+    height: auto; /* Automatically adjust height */
+}
+
+@media screen and (max-width: 600px) {
+    .logo {
+        width: 1px; 
+        height:1px;/* Adjust width for mobile screens */
+    }
+}

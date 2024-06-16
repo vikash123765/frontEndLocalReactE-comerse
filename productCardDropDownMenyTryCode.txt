@@ -1,0 +1,64 @@
+import React, { useState } from "react";
+import ProductModal from "./ProductModal";
+import samurai3s from "../ProductImages/samurai tripple case.jpg";
+
+export default function ProductCard({ p }) {
+  const [modalShown, setModalShown] = useState(false);
+
+  // Map product IDs to their respective images
+  const imageMapping = {
+    15: samurai3s,
+    // Add more mappings as needed
+  };
+
+  // Define product options where multiple product IDs are linked to a single image
+  const productOptions = {
+    15: [
+      { id: 12, name: "iphone 15 samurai" },
+      { id: 13, name: "iphone 14 pro max samurai" },
+      { id: 14, name: "samsung s23 samurai" },
+    ],
+    // Add more options as needed
+  };
+
+  // Set the image based on the first product ID in the product options or directly from p.productId
+  const newImage = imageMapping[p.productId];
+  const displayPrice = p.productPrice.toFixed(2);
+
+  const handleClick = () => {
+    setModalShown(true);
+  };
+
+  const closeModal = () => {
+    setModalShown(false);
+  };
+
+  return (
+    <>
+      <div className="product-card" onClick={handleClick}>
+        <img
+          src={newImage}
+          alt={`Product ${p.productId}`}
+          style={{
+            width: "100%",
+            height: "250px",
+            objectFit: "cover",
+            borderRadius: "0.5rem",
+          }}
+        />
+        <div className="info">
+          <h3>{p.productName}</h3>
+          <div className="price">SEK {displayPrice}</div>
+        </div>
+      </div>
+      {modalShown && (
+        <ProductModal
+          p={p}
+          image={newImage}
+          productOptions={productOptions[p.productId] || []} // Pass product options if available
+          closeModal={closeModal}
+        />
+      )}
+    </>
+  );
+}

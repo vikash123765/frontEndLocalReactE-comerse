@@ -1,0 +1,137 @@
+.product-modal_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000; /* High z-index to ensure it's above other elements */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-modal {
+    background-color: var(--bg);
+    border: 1px solid var(--primary);
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 0.25rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-height: 80vh; /* Set a maximum height */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    overflow-x: scroll;  /* Disable horizontal scrolling */
+    z-index: 1001;
+}
+
+
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 1rem;
+
+    button {
+        border-radius: 0;
+    }
+}
+
+.modal-body {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 2fr;
+    padding: 1rem;
+    align-items: center;
+
+    .buttons {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+
+        .remove {
+            border-radius: 0.5rem 0 0 0.5rem;
+            border-right: 1px solid var(--primary);
+        }
+
+        .add {
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .cart {
+            padding-left: 1rem;
+        }
+    }
+}
+/* Add this to your CSS */
+@media screen and (max-width: 600px) {
+    .price-mobile {
+      position: absolute;
+      bottom:-19px;
+      right: 3px; /* Adjust the value as needed */
+    }
+  }
+
+
+
+.error {
+    color: maroon;
+}
+
+.product-modal_image {
+    width: 100%; /* Set your desired width */
+      height: 100%; /* Set your desired height */
+      object-fit: contain;
+  
+    
+}
+
+  
+  /* Styles for screens larger than mobile */
+  @media (min-width: 600px) {
+    .product-modal_image {
+      width: 400px; /* Set your desired width */
+      height: 400px; /* Set your desired height */
+     
+      object-fit: contain;
+      
+    }
+  }
+  
+
+
+@media screen and (max-width: 600px) {
+    .product-modal {
+        width: calc(100% - 40px); /* Decreased by 60px on all sides */
+        max-width: calc(100% - 40px);
+        padding: 20px; /* Adjusted padding */
+    }
+
+    .modal-body {
+        display: block;
+    }
+
+    .buttons {
+        flex-direction: row; /* Display buttons horizontally */
+        justify-content: space-between; /* Add this to distribute buttons evenly */
+        margin-top: 1rem;
+    }
+
+    .buttons button {
+        flex-basis: 48%; /* Adjusted width of buttons */
+    }
+
+    .remove,
+    .add {
+        flex-basis: 48%; /* Adjusted width of buttons */
+    }
+
+    .cart {
+        padding-left: 1rem;
+        flex-basis: 100%; /* Take up remaining space */
+    }
+}

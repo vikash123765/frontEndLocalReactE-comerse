@@ -1,0 +1,115 @@
+import React, { useState, useEffect } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import CloseIcon from "@mui/icons-material/Close";
+import { useAtom } from "jotai";
+import { storeAtom } from "../lib/store";
+import { addToCart_localStorage } from "../lib/cart";
+import "../style/modal.css";
+
+export default function ProductModal({ p, image, productOptions, closeModal }) {
+  const [store, setStore] = useAtom(storeAtom);
+  const [selectedProductId, setSelectedProductId] = useState(p.productId);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Function to handle adding product to cart
+  const addProductToCart = () => {
+    if (selectedProduct) {
+      setStore((current) => {
+        current.cart.push(selectedProduct);
+        addToCart_localStorage(selectedProduct, store.loggedIn);
+        return { ...current };
+      });
+      closeModal();
+    }
+  };
+
+  // Handle option change in dropdown
+  const handleChangeOption = (event) => {
+    const productId = parseInt(event.target.value);
+    setSelectedProductId(productId);
+  };
+
+  // Effect to update selected product when selectedProductId changes
+  useEffect(() => {
+    setSelectedProduct(productOptions.find((option) => option.id === selectedProductId));
+  }, [selectedProductId, productOptions]);
+
+  // Display price and formatted product type
+  const displayPrice = selectedProduct ? selectedProduct.productPrice.toFixed(2) : "0.00";
+  const formattedProductType = selectedProduct
+    ? selectedProduct.productType
+        .toLowerCase()
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    : "";
+
+  return (
+    <div className="product-modal_backdrop" onClick={closeModal}>
+      <div className="product-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{selectedProduct ? selectedProduct.productName : ""}</h3>
+          <button onClick={closeModal}>
+            <CloseIcon />
+          </button>
+        </div>
+        <div className="modal-body">
+          <div className="left">
+            {image && (
+              <img
+                className="product-modal_image"
+                src={image}
+                alt={selectedProduct ? selectedProduct.productName : ""}
+                style={{ border: "1px solid #ccc", borderRadius: "0.5rem" }}
+              />
+            )}
+          </div>
+          <div className="right">
+            <div>{formattedProductType}</div>
+            <div className="description">
+              Description: {selectedProduct ? selectedProduct.productDescription : ""}
+            </div>
+            <div className="product-options-dropdown-container">
+              {productOptions && productOptions.length > 0 && (
+                <select
+                  value={selectedProductId}
+                  onChange={handleChangeOption}
+                  className="product-options-dropdown"
+                >
+                  {productOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+            <div className="buttons-container">
+              <div className="buttons row">
+                <div className="col-3">
+                  <button className="remove">
+                    <RemoveIcon />
+                  </button>
+                </div>
+                <div className="col-3">
+                  <button className="add">
+                    <AddIcon />
+                  </button>
+                </div>
+                <div className="col-3">
+                  <button onClick={addProductToCart} className="add-to-cart">
+                    Add to Cart
+                  </button>
+                </div>
+                <div className="col-3">
+                  <h4 className="price-mobile">SEK {displayPrice}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

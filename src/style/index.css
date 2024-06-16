@@ -1,0 +1,213 @@
+@import './modal.css';
+@import './products.css';
+@import './cart.css';
+@import './theme.css';
+@import './order.css';
+@import './layout.css';
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    font-family: var(--font-main), sans-serif;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+body {
+    background-color: var(--bg);
+}
+
+/*
+    CSS Diner
+        for learning about selectors and combinators
+        https://flukeout.github.io
+    Flexbox Froggy
+        for CSS flex
+        https://flexboxfroggy.com
+    CSS Grid Garden
+        for CSS Grid
+        https://cssgridgarden.com
+
+    Flex and Grid are when you have a container, and you want more control of the alignemnt of that container's children.
+
+*/
+
+/* This means all direct children of root */
+#root>*>* {
+    width: 1200px;
+    max-width: 100%;
+    margin: auto;
+    padding: 15px;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button,
+input {
+    padding: .5rem;
+    border: 0;
+    border-radius: .5rem;
+}
+
+input {
+    border: 1px solid gray;
+}
+
+button {
+    cursor: pointer;
+    transition: transform 125ms;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+
+
+.cart-icon {
+    position: relative;
+}
+
+.cart-icon .badge {
+    position: absolute;
+    top: -15px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    padding: .25rem;
+    border-radius: 500px;
+    font-size: 60%;
+}
+
+
+
+/*
+    border-width: 5px;
+    boder-style: solid;
+    border-color: black;
+
+   padding-top: 
+   margin-left:
+
+   padding: 5px 10px;       (5px y-padding, 10px x-padding)
+   margin: 1px 2px 3px 4px;     (1px top, then clockwise...)
+*/
+
+#contact {
+    background-color: yellow;
+    border: 5px solid black;
+    padding: 0px;
+    margin: 50px;
+}
+
+#contact {
+    background-color: #f8f8f8;
+    border: 2px solid #ddd;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 50px auto;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+}
+
+#contact form {
+    display: grid;
+    gap: 20px;
+}
+
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.form-field textarea {
+    resize: vertical;
+}
+
+.form-field button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.form-field button:hover {
+    background-color: #2076c1;
+}
+
+
+
+
+
+.error {
+    color: maroon;
+}
+
+.mobile {
+    display: none;
+}
+
+@media screen and (max-width: 800px) {
+    .mobile {
+        display: initial;
+    }
+
+    .desktop {
+        display: none;
+    }
+}
+
+header>div a {
+    color: #000;
+    /* Change menu route color to black */
+}
+
+.buttons-container {
+    /* background-color: green; */
+    position: relative;
+    right: 2px;
+}
+
+.price-mobile {
+    margin-left: 1rem;
+    margin-top: -10px;
+}

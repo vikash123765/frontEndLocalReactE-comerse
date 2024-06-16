@@ -1,0 +1,13 @@
+/* Import Inter font with multiple weights */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --bg: #ececec;
+    --primary: #f2f2f2;
+    --secondary-dark: #dcdcdc;
+    --card: #1a1aaa;
+    --font-main: "Inter", sans-serif;
+    --shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+

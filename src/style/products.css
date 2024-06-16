@@ -1,0 +1,164 @@
+#products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+
+    @media screen and (max-width: 600px) {
+        grid-template-columns: repeat(2, 1fr); /* Display 2 cards per row for all mobile screens */
+    }
+}
+
+
+#product-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+@media screen and (max-width: 600px) {
+    #product-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+#product-filters > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px; /* Adjust margin */
+}
+
+#product-filters label {
+    font-size: 12px;
+}
+
+#product-filters select,
+#product-filters input[type="search"] {
+    width: 100%; /* Adjust width for smaller screens */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#product-filters select::placeholder,
+#product-filters input[type="search"]::placeholder {
+    font-size: 12px;
+}
+
+#product-filters button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#product-filters button:hover {
+    background-color: #2076c1;
+}
+
+.product-card {
+    text-align: left;
+    background-color: var(--bg);
+    border: 2px solid var(--primary);
+    box-shadow: var(--shadow);
+    border: 0.1px solid #beb9b9;
+    cursor: pointer;
+    transition: transform 125ms;
+    color: #3e3939;
+    padding: 0; 
+    margin: 0; 
+    font-family: var(--font-main);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Align children vertically */
+    height: auto; /* Allow button to adjust height according to content */
+
+    &:hover {
+        transform: scale(1.025);
+    }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .price {
+        text-align: right;
+        font-size: 13px;
+        font-weight: bold;
+        color: #3498db;
+    }
+}
+
+
+@media screen and (max-width: 800px) {
+    .product-card {
+        padding: 2px; /* Adjust padding for smaller cards */
+        height:100%;
+        width:100%;
+    }
+
+    .product-image {
+        width: 100%; /* Make image take full width of the card */
+     
+    }
+
+    .info {
+        width: 100%; /* Make text take full width of the card */
+    }
+}
+
+.product-image {
+    width: 100%;
+    object-fit: cover; /* Maintain aspect ratio */
+    border-radius: 0.5rem;
+}
+
+.product-card img {
+    width: 100%;
+    height: 100%; /* Ensure the image takes up full space */
+    object-fit: cover; /* Maintain aspect ratio */
+    border-radius: 0.5rem;
+    display: block; /* Ensure the image behaves as a block-level element */
+}
+
+/* Products.css */
+
+/* Media query for screens smaller than 600px (adjust breakpoint as needed) */
+@media screen and (max-width: 600px) {
+    /* Hide the search button */
+    #searchButton {
+      display: none;
+    }
+  
+    /* Style for the text next to the input */
+    #searchText {
+      display: inline; /* Display as inline element */
+      margin-left: 5px; /* Adjust margin as needed */
+      font-size: 14px; /* Adjust font size as needed */
+      color: #333; /* Text color */
+    }
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+  }
+  
+  .input-group label {
+    margin-right: 5px;
+  }
+  
+  .input-group select,
+  .input-group input[type="search"],
+  .input-group button {
+    margin-left: 5px;
+  }
+
