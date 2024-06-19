@@ -1,36 +1,42 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ProductCard from "../components/ProductCard";
 import { getAllProducts, getProductsByIds } from "../lib/api";
 
-export default function Products() {
+const Products = () => {
   const [products, setProducts] = useState([]);
-  const [types, setTypes] = useState([]);
-  const [priceRangeValues, setPriceRangeValues] = useState([0, 300]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef(null);
   const [soldOutIds, setSoldOutIds] = useState([]);
   const [noProductsFound, setNoProductsFound] = useState(false);
+  const [types, setTypes] = useState([]);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 10; // Number of products per page
+  const observerRef = useRef();
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const productsPerPage = 10;
 
   useEffect(() => {
+    // Fetch products on component mount
     async function fetchData() {
       try {
         const pdx = await getAllProducts();
-        const productsWithDTOs = createProductDTOs(pdx);
-        setProducts(productsWithDTOs);
-
-        const typesArr = productsWithDTOs.map(p => p.productType);
-        setTypes([...new Set(typesArr)]);
+        setProducts(pdx);
+        setFilteredProducts(pdx);
+        setNoProductsFound(pdx.length === 0);
 
         const soldOutProducts = await getProductsByIds([]);
-        const ids = soldOutProducts.map(p => p.productId);
+        const ids = soldOutProducts.map((p) => p.productId);
         setSoldOutIds(ids);
+
+        const typesArr = pdx.map((p) => p.productType);
+        setTypes([...new Set(typesArr)]);
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching products:", err);
       }
     }
 
@@ -38,141 +44,138 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    setFilteredProducts(products); // Initialize filtered products with all products
-  }, [products]);
+    // Detect screen size
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
 
-  function createProductDTOs(pdx) {
-    if (!Array.isArray(pdx)) {
-      return [];
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    // Initial load of products
+    if (products.length > 0) {
+      const initialLoadCount = isMobile ? 5 : productsPerPage; // Initial load count based on isMobile
+      const initialProducts = products.slice(0, initialLoadCount);
+      setDisplayedProducts(initialProducts);
     }
-    return pdx.map(p => ({
-      ...p,
-      productType: p.productType.toLowerCase().replaceAll('_', ' ')
-    }));
-  }
+  }, [products, isMobile]);
 
-  function setProductRange() {
-    const [rangeMin, rangeMax] = priceRangeValues;
-    const uniqueFilteredProducts = products.filter(p => (
-      p.productPrice >= rangeMin && p.productPrice <= rangeMax
-    ));
-    setFilteredProducts(uniqueFilteredProducts);
-    setCurrentPage(1); // Reset to first page when price range changes
-  }
+  const loadMoreProducts = () => {
+    if (isMobile) {
+      const currentProductCount = displayedProducts.length;
+      const remainingProducts = filteredProducts.slice(currentProductCount);
 
+      if (remainingProducts.length > 0) {
+        const newProducts = remainingProducts.slice(0, 5); // Load 5 more products on mobile
+        setDisplayedProducts((prevProducts) => [...prevProducts, ...newProducts]);
+      }
+    }
+  };
+
+  const handleScroll = () => {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const scrollTop = document.documentElement.scrollTop;
+    const clientHeight = document.documentElement.clientHeight;
+    const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+
+    if (isMobile && scrollPercentage > 0.5 && !loadingMore && displayedProducts.length < filteredProducts.length) {
+      setLoadingMore(true);
+      loadMoreProducts();
+    }
+  };
+
+  useEffect(() => {
+    if (isMobile) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [isMobile, displayedProducts, filteredProducts, loadingMore]);
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    const startIndex = (pageNumber - 1) * productsPerPage;
+    const endIndex = Math.min(startIndex + productsPerPage, filteredProducts.length);
+    const newProducts = filteredProducts.slice(startIndex, endIndex);
+    setDisplayedProducts(newProducts);
+    window.scrollTo(0, 0); // Scroll to top when changing page
+  };
+
+  // Handle type change filter
   function handleTypeChange(event) {
     const selectedType = event.target.value;
-    let filtered = [...products];
-  
-    // Clear the search query when changing product type
-    setSearchQuery('');
-  
-    // Perform filtering based on search query
-    if (searchQuery) {
-      const query = searchQuery.trim().toLowerCase();
-      const searchTerms = query.split(" ");
-  
-      filtered = filtered.filter(p => {
-        const productNameWithoutSpaces = p.productName.toLowerCase().replace(/\s+/g, '');
-        const typeWithoutSpaces = p.productType.toLowerCase().replace(/\s+/g, '');
-        // Check if any search term appears anywhere in the product name or type
-        return searchTerms.every(term =>
-          productNameWithoutSpaces.includes(term) ||
-          typeWithoutSpaces.includes(term) ||
-          String(p.productPrice).includes(term) ||
-          String(p.productId).includes(term)
-        );
-      });
-    }
-  
-    // Filter by selected type (if not 'all')
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(p => p.productType === selectedType);
-    }
-  
-    // Update state variables
-    setFilteredProducts(filtered);
-    setCurrentPage(1); // Reset pagination to first page
-    setNoProductsFound(filtered.length === 0); // Set noProductsFound flag
+    const filtered = filterProducts(products, selectedType, searchQuery);
+    updateFilteredProducts(filtered);
   }
-  
+
+  // Handle search input change
   function handleSearch(event) {
     // Check if Enter key was pressed (keyCode 13) or button was clicked
-    if (event.key === 'Enter' || event.type === 'click') {
+    if (event.key === "Enter" || event.type === "click") {
       const query = searchRef.current.value.trim().toLowerCase(); // Access input value using useRef
       setSearchQuery(query);
-  
-      let filtered = [...products]; // Make a copy of products array
-  
-      // Perform filtering based on search query
-      if (query) {
-        const searchTerms = query.split(" ");
-  
-        filtered = filtered.filter(p => {
-          const productNameWithoutSpaces = p.productName.toLowerCase().replace(/\s+/g, '');
-          const typeWithoutSpaces = p.productType.toLowerCase().replace(/\s+/g, '');
-          // Check if any search term appears anywhere in the product name or type
-          return searchTerms.every(term =>
-            productNameWithoutSpaces.includes(term) ||
-            typeWithoutSpaces.includes(term) ||
-            String(p.productPrice).includes(term) ||
-            String(p.productId).includes(term)
-          );
-        });
-      }
-  
-      // Filter by selected type (if not 'all')
-      const selectedType = document.getElementById("typeFilter").value;
-      if (selectedType !== 'all') {
-        filtered = filtered.filter(p => p.productType === selectedType);
-      }
-  
-      // Update state variables
-      setFilteredProducts(filtered);
-      setCurrentPage(1); // Reset pagination to first page
-      setNoProductsFound(filtered.length === 0); // Set noProductsFound flag
+      const filtered = filterProducts(products, document.getElementById("typeFilter").value, query);
+      updateFilteredProducts(filtered);
     }
   }
-  
 
+  // Sort products based on selected option
   function sortProducts(event) {
     const sortBy = event.target.value;
     let sortedProducts = [...filteredProducts];
 
-    if (sortBy === 'price-d') {
-      sortedProducts.sort((a, b) => {
-        if (b.productPrice === a.productPrice) {
-          return a.productType.localeCompare(b.productType);
-        }
-        return b.productPrice - a.productPrice;
-      });
-    } else if (sortBy === 'price-a') {
-      sortedProducts.sort((a, b) => {
-        if (a.productPrice === b.productPrice) {
-          return a.productType.localeCompare(b.productType);
-        }
-        return a.productPrice - b.productPrice;
-      });
-    } else if (sortBy === 'all') {
+    if (sortBy === "price-d") {
+      sortedProducts.sort((a, b) => b.productPrice - a.productPrice || a.productType.localeCompare(b.productType));
+    } else if (sortBy === "price-a") {
+      sortedProducts.sort((a, b) => a.productPrice - b.productPrice || a.productType.localeCompare(b.productType));
+    } else if (sortBy === "all") {
       sortedProducts.sort((a, b) => a.productName.localeCompare(b.productName));
     }
 
-    setFilteredProducts(sortedProducts);
-    setCurrentPage(1); // Reset to first page when sorting changes
+    updateFilteredProducts(sortedProducts);
   }
 
+  // Function to filter products based on type and search query
+  function filterProducts(products, selectedType, query) {
+    let filtered = [...products];
 
-  // Calculate current products to display based on pagination
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    // Perform filtering based on search query
+    if (query) {
+      const searchTerms = query.split(" ");
 
-  // Pagination click handler
-  const handlePageClick = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo(0, 0); // Scroll to top when changing page
+      filtered = filtered.filter((p) => {
+        const productNameWithoutSpaces = p.productName.toLowerCase().replace(/\s+/g, "");
+        const typeWithoutSpaces = p.productType.toLowerCase().replace(/\s+/g, "");
+        // Check if any search term appears anywhere in the product name or type
+        return (
+          searchTerms.every((term) =>
+            productNameWithoutSpaces.includes(term) ||
+            typeWithoutSpaces.includes(term) ||
+            String(p.productPrice).includes(term) ||
+            String(p.productId).includes(term)
+          )
+        );
+      });
+    }
+
+    // Filter by selected type (if not 'all')
+    if (selectedType !== "all") {
+      filtered = filtered.filter((p) => p.productType === selectedType);
+    }
+
+    return filtered;
+  }
+
+  const updateFilteredProducts = (filtered) => {
+    setFilteredProducts(filtered);
+    const initialCount = isMobile ? 5 : productsPerPage; // Adjust initial load count based on isMobile
+    setDisplayedProducts(filtered.slice(0, initialCount));
+    setCurrentPage(1);
+    setNoProductsFound(filtered.length === 0);
   };
-
 
   return (
     <>
@@ -181,9 +184,9 @@ export default function Products() {
           <label htmlFor="typeFilter">Type</label>
           <select id="typeFilter" onChange={handleTypeChange}>
             <option value="all">All</option>
-            {types.map(type => (
+            {types.map((type) => (
               <option value={type} key={type}>
-                {type.toLowerCase().replaceAll('_', ' ')}
+                {type.toLowerCase().replaceAll("_", " ")}
               </option>
             ))}
           </select>
@@ -197,9 +200,9 @@ export default function Products() {
             onKeyDown={handleSearch}
             onChange={handleSearch}
           />
-          <button onClick={handleSearch} id="searchButton">Search</button>
-
-
+          <button onClick={handleSearch} id="searchButton">
+            Search
+          </button>
         </div>
         <div>
           <label htmlFor="sortFilter">Filter</label>
@@ -211,42 +214,67 @@ export default function Products() {
           </select>
         </div>
       </div>
+
       <div id="products">
         {noProductsFound ? (
           <div>Sorry, no products match your search.</div>
         ) : (
-          currentProducts.map(p => (
-            <ProductCard key={`pcard-${p.productId}`} p={p} isSoldOut={soldOutIds.includes(p.productId)} />
+          displayedProducts.map((p) => (
+            <ProductCard
+              key={`pcard-${p.productId}`}
+              p={p}
+              isSoldOut={soldOutIds.includes(p.productId)}
+            />
           ))
         )}
       </div>
-       {/* Pagination */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-        <ul style={{ listStyle: 'none', padding: 0, display: 'flex', justifyContent: 'center' }}>
-          {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, i) => (
-            <li
-              key={i}
-              style={{ margin: '0 5px' }}
-              className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-            >
-              <button
-                style={{
-                  textDecoration: 'none',
-                  backgroundColor: currentPage === i + 1 ? 'blue' : '#f0f0f0',
-                  color: currentPage === i + 1 ? 'white' : '#333',
-                  border: '1px solid #ccc',
-                  padding: '5px 10px',
-                  cursor: 'pointer'
-                }}
-                className="page-link"
-                onClick={() => handlePageClick(i + 1)}
-              >
-                {i + 1}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+
+      {filteredProducts.length > productsPerPage && isMobile && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+          <ul style={{ listStyle: "none", padding: 0, display: "flex" }}>
+            {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
+              <li key={`page-${index}`}>
+                <button
+                  onClick={() => handlePageClick(index + 1)}
+                  style={{
+                    margin: "0 5px",
+                    fontWeight: currentPage === index + 1 ? "bold" : "normal",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {filteredProducts.length > productsPerPage && !isMobile && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+          <ul style={{ listStyle: "none", padding: 0, display: "flex" }}>
+            {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
+              <li key={`page-${index}`}>
+                <button
+                  onClick={() => handlePageClick(index + 1)}
+                  style={{
+                    margin: "0 5px",
+                    fontWeight: currentPage === index + 1 ? "bold" : "normal",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
-}
+};
+
+export default Products;
+ 
